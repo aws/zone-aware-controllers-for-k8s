@@ -1,0 +1,8 @@
+resources:
+# We are commenting auto generated manifest.yaml configs because webhook configurations
+# should be defined by the DP CDK package only: https://code.amazon.com/reviews/CR-65952854
+#- manifests.yaml
+- service.yaml
+ 
+configurations:
+- kustomizeconfig.yaml

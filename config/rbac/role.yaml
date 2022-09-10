@@ -1,0 +1,97 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  creationTimestamp: null
+  name: manager-role
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - nodes
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  verbs:
+  - delete
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - pods/status
+  verbs:
+  - get
+- apiGroups:
+  - apps
+  resources:
+  - statefulsets
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - apps
+  resources:
+  - statefulsets/status
+  verbs:
+  - get
+  - update
+- apiGroups:
+  - zonecontrol.k8s.aws
+  resources:
+  - zoneawareupdates
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - zonecontrol.k8s.aws
+  resources:
+  - zoneawareupdates/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - zonecontrol.k8s.aws
+  resources:
+  - zoneawareupdates/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - zonecontrol.k8s.aws
+  resources:
+  - zonedisruptionbudgets
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - zonecontrol.k8s.aws
+  resources:
+  - zonedisruptionbudgets/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - zonecontrol.k8s.aws
+  resources:
+  - zonedisruptionbudgets/status
+  verbs:
+  - get
+  - patch
+  - update

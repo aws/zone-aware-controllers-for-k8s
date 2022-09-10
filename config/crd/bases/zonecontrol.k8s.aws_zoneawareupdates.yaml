@@ -1,0 +1,112 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.8.0
+  creationTimestamp: null
+  name: zoneawareupdates.zonecontrol.k8s.aws
+spec:
+  group: zonecontrol.k8s.aws
+  names:
+    kind: ZoneAwareUpdate
+    listKind: ZoneAwareUpdateList
+    plural: zoneawareupdates
+    shortNames:
+    - zau
+    singular: zoneawareupdate
+  scope: Namespaced
+  versions:
+  - name: v1
+    schema:
+      openAPIV3Schema:
+        description: ZoneAwareUpdate is the Schema for the zoneawareupdates API
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: ZoneAwareUpdateSpec defines the desired state of ZoneAwareUpdate
+            properties:
+              dryRun:
+                description: Dryn-run mode that can be used to test the new controller
+                  before enable it
+                type: boolean
+              exponentialFactor:
+                default: "2.0"
+                description: The exponential growth rate in float string. Default
+                  value is 2.0.
+                type: string
+              ignoreAlarm:
+                description: Flag to ignore the PauseRolloutAlarm (default false)
+                type: boolean
+              maxUnavailable:
+                anyOf:
+                - type: integer
+                - type: string
+                description: Max number (or %) of pods that can be updated at the
+                  same time.
+                x-kubernetes-int-or-string: true
+              pauseRolloutAlarm:
+                description: CW alarm name used to pause/skip updates. Alarm should
+                  be on the same account and region.
+                type: string
+              statefulset:
+                description: The name of the StatefulSet for which the ZoneAwareUpdate
+                  applies to.
+                type: string
+            type: object
+          status:
+            description: ZoneAwareUpdateStatus defines the observed state of ZoneAwareUpdate
+            properties:
+              currentRevision:
+                description: CurrentRevision indicates the version of the StatefulSet
+                  used to generate Pods
+                type: string
+              deletedReplicas:
+                description: DeletedReplicas is the number of replicas deleted in
+                  the last reconcile loop.
+                format: int32
+                type: integer
+              oldReplicas:
+                additionalProperties:
+                  format: int32
+                  type: integer
+                description: OldReplicas is the number of Pods *per zone* in the CurrentRevision,
+                  when there is new UpdateRevision. It becomes zero for all zones
+                  when all pods are in the new revision.
+                type: object
+              pausedRollout:
+                description: PausedRollout indicates if the rollout was paused becaused
+                  the PauseRolloutAlarm is in alarm.
+                type: boolean
+              updateRevision:
+                description: UpdateRevision indicates the new version of the StatefulSet
+                type: string
+              updateStep:
+                description: UpdateStep is used to track the rollout progress. Everytime
+                  pods are deleted/updated this is increased. It becomes zero when
+                  all pods are in the new revision.
+                format: int32
+                type: integer
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []

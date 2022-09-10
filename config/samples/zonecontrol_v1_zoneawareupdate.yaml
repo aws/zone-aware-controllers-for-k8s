@@ -1,0 +1,9 @@
+apiVersion: zonecontrol.k8s.aws/v1
+kind: ZoneAwareUpdate
+metadata:
+  name: ingester-zau
+spec:
+  statefulset: ingester
+  maxUnavailable: 2
+  pauseRolloutAlarm: PauseDeployment.Ingesters
+  ignoreAlarm: false

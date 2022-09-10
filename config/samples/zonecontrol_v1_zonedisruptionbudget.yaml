@@ -1,0 +1,10 @@
+apiVersion: zonecontrol.k8s.aws/v1
+kind: ZoneDisruptionBudget
+metadata:
+  name: ingester-zdb
+spec:
+  selector:
+    matchLabels:
+      name: ingester
+  maxUnavailable: 10%
+  dryRun: false
