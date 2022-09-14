@@ -1,0 +1,24 @@
+# permissions for end users to edit zonedisruptionbudgets.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: zonedisruptionbudget-editor-role
+rules:
+- apiGroups:
+  - zonecontrol.k8s.aws
+  resources:
+  - zonedisruptionbudgets
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - zonecontrol.k8s.aws
+  resources:
+  - zonedisruptionbudgets/status
+  verbs:
+  - get
