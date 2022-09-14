@@ -1010,8 +1010,8 @@ rsc.io/binaryregexp v0.2.0/go.mod h1:qTv7/COck+e2FymRvadv62gMdZztPaShugOCi3I+8D8
 rsc.io/quote/v3 v3.1.0/go.mod h1:yEA65RcK8LyAZtP9Kv3t0HmxON59tX3rD+tICJqUlj0=
 rsc.io/sampler v1.3.0/go.mod h1:T1hPZKmBbMNahiBKFy5HrXp6adAjACjK9JXDnKaTXpA=
 sigs.k8s.io/apiserver-network-proxy/konnectivity-client v0.0.25/go.mod h1:Mlj9PNLmG9bZ6BHFwFKDo5afkpWyUISkb9Me0GnK66I=
-sigs.k8s.io/aws-iam-authenticator v0.5.8 h1:evA2FbxFIvZWoZHFRHzY1MIQTHBpHxQLi3ofA7v0Mto=
-sigs.k8s.io/aws-iam-authenticator v0.5.8/go.mod h1:6dId2LCc8oHqeBzP6E8ndp4DflhKTxYLb5ZXwI4YmFA=
+sigs.k8s.io/aws-iam-authenticator v0.5.9 h1:r0xXKCAZVBKRZkJRdy/nm8bEQbBjjw+3xi0rzi31RJE=
+sigs.k8s.io/aws-iam-authenticator v0.5.9/go.mod h1:6dId2LCc8oHqeBzP6E8ndp4DflhKTxYLb5ZXwI4YmFA=
 sigs.k8s.io/controller-runtime v0.11.0 h1:DqO+c8mywcZLFJWILq4iktoECTyn30Bkj0CwgqMpZWQ=
 sigs.k8s.io/controller-runtime v0.11.0/go.mod h1:KKwLiTooNGu+JmLZGn9Sl3Gjmfj66eMbCQznLP5zcqA=
 sigs.k8s.io/e2e-framework v0.0.6 h1:mGalOzsc25nz4GBOD6oVWBFKFcAanMso6oj3+4wiCFw=
