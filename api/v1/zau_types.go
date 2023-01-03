@@ -39,6 +39,8 @@ type ZoneAwareUpdateSpec struct {
 	MaxUnavailable *intstr.IntOrString `json:"maxUnavailable,omitempty"`
 
 	// The exponential growth rate in float string. Default value is 2.0.
+	// It's possible to disable exponential updates by setting the ExponentialFactor to 0. In this case,
+	// the number of pods updated at each step is defined only by the MaxUnavailable param.
 	//+kubebuilder:default:="2.0"
 	ExponentialFactor string `json:"exponentialFactor,omitempty"`
 
