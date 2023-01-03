@@ -23,6 +23,7 @@ import (
 	"context"
 	"flag"
 	"os"
+	"strings"
 
 	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
 	// to ensure that exec-entrypoint and run can make use of them.
@@ -44,6 +45,13 @@ import (
 	"github.com/aws/zone-aware-controllers-for-k8s/pkg/utils"
 	web "github.com/aws/zone-aware-controllers-for-k8s/webhooks"
 	//+kubebuilder:scaffold:imports
+)
+
+const (
+	CONTROLLERS_ENV               = "CONTROLLERS"
+	CONTROLLERS_ENV_DEFAULT_VALUE = "zdb,zau"
+	CONTROLLERS_ENV_ZAU_VALUE     = "zau"
+	CONTROLLERS_ENV_ZDB_VALUE     = "zdb"
 )
 
 var (
@@ -88,14 +96,12 @@ func main() {
 		os.Exit(1)
 	}
 
-	region := os.Getenv("AWS_REGION") // AWS_REGION env is set by EKS
-	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion(region))
-	if err != nil {
-		setupLog.Error(err, "unable to load AWS config")
+	startZdb, startZau := controllersToStart()
+
+	if !startZdb && !startZau {
+		setupLog.Error(err, "no valid controller (zau and/or zdb) specified to start")
 		os.Exit(1)
 	}
-	cwClient := cloudwatch.NewFromConfig(cfg)
-	cwAlarmStateProvider := &utils.CloudWatchAlarmStateProvider{Client: cwClient}
 
 	podZoneHelper := podzone.Helper{
 		Client: mgr.GetClient(),
@@ -103,34 +109,50 @@ func main() {
 		Cache:  podzone.NewCache(),
 	}
 
-	if err = (&controllers.ZoneDisruptionBudgetReconciler{
-		Client:        mgr.GetClient(),
-		Scheme:        mgr.GetScheme(),
-		Logger:        ctrl.Log.WithName("zdb-controller"),
-		PodZoneHelper: &podZoneHelper,
-	}).SetupWithManager(mgr); err != nil {
-		setupLog.Error(err, "unable to create controller", "controller", "ZoneDisruptionBudget")
-		os.Exit(1)
+	if startZdb {
+		if err = (&controllers.ZoneDisruptionBudgetReconciler{
+			Client:        mgr.GetClient(),
+			Scheme:        mgr.GetScheme(),
+			Logger:        ctrl.Log.WithName("zdb-controller"),
+			PodZoneHelper: &podZoneHelper,
+		}).SetupWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create controller", "controller", "ZoneDisruptionBudget")
+			os.Exit(1)
+		}
 	}
-	if err = (&controllers.ZoneAwareUpdateReconciler{
-		Client:             mgr.GetClient(),
-		Scheme:             mgr.GetScheme(),
-		Logger:             ctrl.Log.WithName("zau-controller"),
-		PodZoneHelper:      &podZoneHelper,
-		AlarmStateProvider: cwAlarmStateProvider,
-	}).SetupWithManager(mgr); err != nil {
-		setupLog.Error(err, "unable to create controller", "controller", "ZoneAwareUpdate")
-		os.Exit(1)
+
+	if startZau {
+		region := os.Getenv("AWS_REGION") // AWS_REGION env is set by EKS
+		cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion(region))
+		if err != nil {
+			setupLog.Error(err, "unable to load AWS config")
+			os.Exit(1)
+		}
+		cwClient := cloudwatch.NewFromConfig(cfg)
+		cwAlarmStateProvider := &utils.CloudWatchAlarmStateProvider{Client: cwClient}
+
+		if err = (&controllers.ZoneAwareUpdateReconciler{
+			Client:             mgr.GetClient(),
+			Scheme:             mgr.GetScheme(),
+			Logger:             ctrl.Log.WithName("zau-controller"),
+			PodZoneHelper:      &podZoneHelper,
+			AlarmStateProvider: cwAlarmStateProvider,
+		}).SetupWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create controller", "controller", "ZoneAwareUpdate")
+			os.Exit(1)
+		}
 	}
 	//+kubebuilder:scaffold:builder
 
 	// Setup core types webhooks
-	hookServer := mgr.GetWebhookServer()
-	setupLog.Info("registering webhooks to the webhook server")
-	hookServer.Register("/pod-eviction-v1", &webhook.Admission{Handler: &web.PodEvictionHandler{
-		Client: mgr.GetClient(),
-		Logger: ctrl.Log.WithName("eviction-webhook"),
-	}})
+	if startZdb {
+		hookServer := mgr.GetWebhookServer()
+		setupLog.Info("registering webhooks to the webhook server")
+		hookServer.Register("/pod-eviction-v1", &webhook.Admission{Handler: &web.PodEvictionHandler{
+			Client: mgr.GetClient(),
+			Logger: ctrl.Log.WithName("eviction-webhook"),
+		}})
+	}
 
 	if err := mgr.AddHealthzCheck("healthz", healthz.Ping); err != nil {
 		setupLog.Error(err, "unable to set up health check")
@@ -146,4 +168,15 @@ func main() {
 		setupLog.Error(err, "problem running manager")
 		os.Exit(1)
 	}
+}
+
+func controllersToStart() (zdb bool, zau bool) {
+	controllersEnv, hasEnv := os.LookupEnv(CONTROLLERS_ENV)
+	if !hasEnv {
+		controllersEnv = CONTROLLERS_ENV_DEFAULT_VALUE
+	}
+
+	zdb = strings.Contains(controllersEnv, CONTROLLERS_ENV_ZDB_VALUE)
+	zau = strings.Contains(controllersEnv, CONTROLLERS_ENV_ZAU_VALUE)
+	return zdb, zau
 }
