@@ -370,6 +370,11 @@ func (r *ZoneAwareUpdateReconciler) maxPodsToDelete(maxUnavailable int, updateSt
 	if err != nil {
 		return 0, err
 	}
+
+	if factor == 0 {
+		return maxUnavailable, nil
+	}
+
 	maxToDelete := math.Pow(factor, float64(updateStep))
 	if maxToDelete > math.MaxInt32 {
 		maxToDelete = math.MaxInt32

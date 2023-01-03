@@ -448,6 +448,20 @@ var _ = Describe("ZAU Controller", func() {
 				exponentialFactor: "2.0",
 				result:            10,
 			},
+			{
+				name:              "exponential 1 - update pods one by one",
+				maxUnavailable:    10,
+				updateStep:        2,
+				exponentialFactor: "1.0",
+				result:            1,
+			},
+			{
+				name:              "exponential 0 - disables exponential updates",
+				maxUnavailable:    10,
+				updateStep:        8,
+				exponentialFactor: "0",
+				result:            10,
+			},
 		}
 		for _, tt := range tests {
 			Context("When "+tt.name, func() {
@@ -573,9 +587,10 @@ func createResources(label string, replicas int, maxUnavailable int, zones []str
 
 // Create n number of pod replicas evenly distributed accross zones.
 // Example: 3 replicas, 3 zones
-//    zone-1: [pod-0, pod-3, pod-6]
-//    zone-2: [pod-1, pod-4, pod-7]
-//    zone-3: [pod-2, pod-5, pod-8]
+//
+//	zone-1: [pod-0, pod-3, pod-6]
+//	zone-2: [pod-1, pod-4, pod-7]
+//	zone-3: [pod-2, pod-5, pod-8]
 func createPods(label string, replicas int, zones []string, ss *apps.StatefulSet) []*v1.Pod {
 	pods := []*v1.Pod{}
 	for i := 0; i < replicas; {

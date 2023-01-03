@@ -28,6 +28,17 @@ pod #   [[28], [27, 22], [19, 17, 15, 10], [8, 6, 1]], [[29, 26, 23, 20], [16, 1
         '---------------- zone-1 -------------------'  '---------------- zone-2 -----------------'
 ```
 
+
+Some applications don't necessarily need to have pods updated exponentially. For those, it's possible to disable exponential updates by setting the `ExponentialFactor` to zero.
+
+```
+          >>>>>---------- Update Sequence (MaxUnavailable = 4, ExponentialFactor = 0) -------->
+
+pod #   [[28, 27, 22, 19], [17, 15, 10, 8], [6, 1]], [[29, 26, 23, 20], [16, 14, 11, 7], [5, 2]], ...
+        |                                         |  |                                         |
+        '---------------- zone-1 -----------------'  '---------------- zone-2 -----------------'
+```
+
 #### Usage
 
 To have the rollout of a StatefulSet's pods coordinated by ZAU controller, the StatefulSet update strategy should be changed to [`OnDelete`](https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies) and a `ZoneAwareUpdate` resource defined into the same namespace as the StatefulSet.
@@ -40,6 +51,19 @@ metadata:
 spec:
   statefulset: <sts-name>
   maxUnavailable: 2
+```
+
+`maxUnavailable` can be an absolute number or a percentage of total Pods. For example, in case your application is evenly distributed accross 3 zones, it's possible to update all pods at once in each zone by setting `maxUnavailable` to at leat 33% and exponentialFactor to 0:
+
+```yaml
+apiVersion: zonecontrol.k8s.aws/v1
+kind: ZoneAwareUpdate
+metadata:
+  name: <zau-name>
+spec:
+  statefulset: <sts-name>
+  maxUnavailable: 33%
+  exponentialFactor: 0
 ```
 
 It's also possible to specify the name of a Amazon CloudWatch aggregate alarm that will pause the rollout when in alarm state. This can be used to prevent deployments from preceeding in case of canary failures, for example.
