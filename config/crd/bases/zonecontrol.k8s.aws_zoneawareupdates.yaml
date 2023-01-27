@@ -44,7 +44,9 @@ spec:
               exponentialFactor:
                 default: "2.0"
                 description: The exponential growth rate in float string. Default
-                  value is 2.0.
+                  value is 2.0. It's possible to disable exponential updates by setting
+                  the ExponentialFactor to 0. In this case, the number of pods updated
+                  at each step is defined only by the MaxUnavailable param.
                 type: string
               ignoreAlarm:
                 description: Flag to ignore the PauseRolloutAlarm (default false)
