@@ -18,8 +18,8 @@ limitations under the License.
 */
 
 // Package v1 contains API Schema definitions for the zonecontrol v1 API group
-//+kubebuilder:object:generate=true
-//+groupName=zonecontrol.k8s.aws
+// +kubebuilder:object:generate=true
+// +groupName=zonecontrol.k8s.aws
 package v1
 
 import (

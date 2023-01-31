@@ -11,7 +11,6 @@ import (
 	"k8s.io/client-go/rest"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/envtest"
-	"sigs.k8s.io/controller-runtime/pkg/envtest/printer"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 )
@@ -26,10 +25,7 @@ var testUtils test.Utils
 
 func TestAPIs(t *testing.T) {
 	RegisterFailHandler(Fail)
-
-	RunSpecsWithDefaultAndCustomReporters(t,
-		"Pod Zone Helper Suite",
-		[]Reporter{printer.NewlineReporter{}})
+	RunSpecs(t, "Pod Zone Helper Suite")
 }
 
 var _ = BeforeSuite(func() {
