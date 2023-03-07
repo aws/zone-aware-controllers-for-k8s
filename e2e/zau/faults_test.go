@@ -24,7 +24,7 @@ func configurePauseAlarm(ctx context.Context, cfg *envconf.Config, alarmName str
 
 // deployHealthyImage will upgrade the StatefulSet under test to a working container image
 func deployHealthyImage(ctx context.Context, cfg *envconf.Config) error {
-	return deployImage(ctx, cfg, "k8s.gcr.io/nginx-slim:0.8")
+	return deployImage(ctx, cfg, "registry.k8s.io/nginx-slim:0.8")
 }
 
 // deployFaultyImage will upgrade the StatefulSet under test to a container image that will cause a pod failure
