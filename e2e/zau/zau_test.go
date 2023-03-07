@@ -212,7 +212,7 @@ func TestE2EZauOverlappingDeployments(t *testing.T) {
 	f1 := features.New("overlapping deployment").
 		Assess("no disruption breach", func(ctx context.Context, t *testing.T, cfg *envconf.Config) context.Context {
 			g := NewWithT(t)
-			upgrades := []string{"k8s.gcr.io/nginx-slim:0.6", "k8s.gcr.io/nginx-slim:0.7", "k8s.gcr.io/nginx-slim:0.8", "k8s.gcr.io/nginx-slim:0.9"}
+			upgrades := []string{"registry.k8s.io/nginx-slim:0.6", "registry.k8s.io/nginx-slim:0.7", "registry.k8s.io/nginx-slim:0.8", "registry.k8s.io/nginx-slim:0.9"}
 
 			for _, upgrade := range upgrades {
 				t.Logf("updated statefulset image to %s", upgrade)
