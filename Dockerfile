@@ -1,5 +1,5 @@
 # Build the manager binary
-FROM public.ecr.aws/docker/library/golang:1.19 as builder
+FROM public.ecr.aws/docker/library/golang:1.20 as builder
 
 WORKDIR /workspace
 # Copy the Go Modules manifests
